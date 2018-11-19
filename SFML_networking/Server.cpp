@@ -3,6 +3,8 @@
 using namespace std;
 Server::Server()
 {
+	socket.setBlocking(false);
+	timeStamp = clock.getElapsedTime().asMilliseconds();
 }
 
 Server::~Server()
@@ -12,48 +14,75 @@ Server::~Server()
 
 void Server::udpBind()
 {
-	if (socket.bind(4444) != sf::Socket::Done)
+	unsigned short port = 4444;
+	
+
+	if (socket.bind(port) != sf::Socket::Done)
 	{
 		cout << "failed to bind" << endl;
+		return;
+	}		
+	std::cout << "Server is listening to port " << port << ", waiting for a message... " << std::endl;
+
+	
+
+}
+void Server::confirmTimeStamp()
+{
+	std::size_t received;
+	sf::IpAddress sender;
+	unsigned short senderPort;
+	sf::Uint32 time;
+	if (socket.receive(&time, sizeof(time), received, sender, senderPort) != sf::Socket::Done)
+	{
+		cout << "failed to reciev" << endl;
 	}
-
-
+	else
+	{
+		if (time + 200 > getTimeStamp())
+		{
+			cout << "respose to long" << endl;
+		}
+		else
+		{
+			cout << "time fine" << endl;
+		}
+	}
 
 }
 void Server::listener()
 {
+	unsigned short port = 4444;
+	// Wait for a message
+	char in[128];
+	std::size_t received;
+	sf::IpAddress sender;
+	unsigned short senderPort;
+	if (socket.receive(in, sizeof(in), received, sender, senderPort) != sf::Socket::Done)
+		return;
+	std::cout << "Message received from client " << sender << ": \"" << in << "\"" << std::endl;
 
-	if (listenerSoc.listen(4444) != sf::Socket::Done)
+	// Send an answer to the client
+	const char out[] = "Hi, I'm the server";
+	if (socket.send(out, sizeof(out), sender, senderPort) != sf::Socket::Done)
+		return;
+	std::cout << "Message sent to the client: \"" << out << "\"" << std::endl;
+
+	timeStamp = getTimeStamp();
+	if (socket.send(&timeStamp, sizeof(timeStamp), sender, senderPort) != sf::Socket::Done)
 	{
-		cout << "Failed to bind listenerSoc on " << listenerSoc.getLocalPort() << endl;
-		// error...
+		std::cout << "time stamp not sent" << std::endl;
 	}
-	else
-	{
-		cout << "new cliant connecting" << endl;
+	std::cout << "time stamp sent to the client: \"" << timeStamp << "\"" << std::endl;
+	
+	
+	
+}
 
-		sf::TcpSocket cliant;
-		if (listenerSoc.accept(cliant) != sf::Socket::Done)
-		{
-			cout << "failled to connect" << endl;
-		}
-		else
-		{
+sf::Uint32 Server::getTimeStamp()
+{
+	return clock.getElapsedTime().asMilliseconds();
 
-			const char out[] = "Hi, I'm the server";
-			if (cliant.send(out, sizeof(out)) != sf::Socket::Done)
-			{
-				cout << "failed to send message" << endl;
-			}
-			
-			else
-			{
-				std::cout << "Message sent to the client: \"" << out << "\"" << std::endl;
-			}
-			
-			
-		}
-
-	}
 
 }
+

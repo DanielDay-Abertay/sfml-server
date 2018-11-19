@@ -18,7 +18,9 @@ int main()
 	bool close = false;
 	Server server;
 
-	server.listener();
+	
+
+	server.udpBind();
 	
 
 	
@@ -62,9 +64,10 @@ int main()
 			}
 		}
 		if (!close) {
-			deltaTime = clock.restart().asSeconds();
+			//deltaTime = clock.restart().asSeconds();
 
-			
+			server.listener();
+			server.confirmTimeStamp();
 		}
 		
 
