@@ -1,5 +1,16 @@
 #pragma once
 #include <SFML\Network.hpp>
+#include "CustomPacket.h"
+
+struct playerInfo
+{
+	bool connectRequest = false;
+	bool connectAccepted = false;
+	sf::Uint32 timeStamp = NULL;
+	bool timeOkay = false;
+	bool timeSent = false;
+};
+
 class Server
 {
 public:
@@ -11,6 +22,10 @@ public:
 	sf::Uint32 getTimeStamp();
 
 
+	bool sendPacket(sf::Packet packet);
+	bool receivePacket();
+
+
 protected:
 
 	sf::TcpListener listenerSoc;
@@ -18,5 +33,17 @@ protected:
 	sf::Int32 timeStamp;
 	sf::Clock clock;
 	
+	CustomPacket pack;
+	playerInfo info;
+
+
+
+	sf::Packet sentPacket;
+	sf::Packet receivedPacket;
+
+	unsigned short port;
+	sf::IpAddress cliant;
+
+	bool once = false;
 };
 

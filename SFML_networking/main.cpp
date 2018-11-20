@@ -67,7 +67,7 @@ int main()
 			//deltaTime = clock.restart().asSeconds();
 
 			server.listener();
-			server.confirmTimeStamp();
+			//server.confirmTimeStamp();
 		}
 		
 

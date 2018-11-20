@@ -5,6 +5,7 @@ Server::Server()
 {
 	socket.setBlocking(false);
 	timeStamp = clock.getElapsedTime().asMilliseconds();
+	port = 4444;
 }
 
 Server::~Server()
@@ -52,30 +53,66 @@ void Server::confirmTimeStamp()
 }
 void Server::listener()
 {
-	unsigned short port = 4444;
-	// Wait for a message
-	char in[128];
-	std::size_t received;
-	sf::IpAddress sender;
-	unsigned short senderPort;
-	if (socket.receive(in, sizeof(in), received, sender, senderPort) != sf::Socket::Done)
-		return;
-	std::cout << "Message received from client " << sender << ": \"" << in << "\"" << std::endl;
-
-	// Send an answer to the client
-	const char out[] = "Hi, I'm the server";
-	if (socket.send(out, sizeof(out), sender, senderPort) != sf::Socket::Done)
-		return;
-	std::cout << "Message sent to the client: \"" << out << "\"" << std::endl;
-
-	timeStamp = getTimeStamp();
-	if (socket.send(&timeStamp, sizeof(timeStamp), sender, senderPort) != sf::Socket::Done)
+	if (!receivePacket())
 	{
-		std::cout << "time stamp not sent" << std::endl;
+		return;
 	}
-	std::cout << "time stamp sent to the client: \"" << timeStamp << "\"" << std::endl;
+
+	if (info.connectRequest == true && info.connectAccepted == false)
+	{
+		cout << "acceppted connection"<< endl;
+		info.connectAccepted = true;
+		if (!pack.fillPacket(info, sentPacket))
+		{
+			return;
+		}
+
+		if (!sendPacket(sentPacket))
+		{
+			cout << "failed to send" << endl;
+		}
+		//return;
+	}
 	
 	
+	if (info.connectAccepted == true && info.connectRequest == true && info.timeSent == false)
+	{
+		sf::Packet packetnew;
+		
+		info.timeStamp = getTimeStamp();
+		info.timeSent = true;
+		if (!pack.fillPacket(info, sentPacket))
+		{
+			
+			cout << "something went wrong" << endl;
+		}
+
+		if (!sendPacket(sentPacket))
+		{
+			cout << "failed to send" << endl;
+		}
+		cout << "time stmap =" << info.timeStamp << endl;
+		return;
+	}
+
+	if (info.timeSent)
+	{
+		if (info.timeStamp < getTimeStamp() + 100 )
+		{
+			info.timeOkay = true;
+			if (!pack.fillPacket(info, sentPacket))
+			{
+
+				cout << "something went wrong" << endl;
+			}
+
+			if (!sendPacket(sentPacket))
+			{
+				cout << "failed to send" << endl;
+			}
+			cout << "all good" << endl;
+		}
+	}
 	
 }
 
@@ -86,3 +123,27 @@ sf::Uint32 Server::getTimeStamp()
 
 }
 
+bool Server::sendPacket(sf::Packet packet)
+{
+
+	if (socket.send(packet, cliant, port) != sf::Socket::Done)
+	{
+		return false;
+	}
+	return true;
+
+}
+
+bool Server::receivePacket()
+{
+	if (socket.receive(receivedPacket, cliant, port) != sf::Socket::Done)
+	{
+		return false;
+	}
+	if (!pack.checkPacket(receivedPacket, &info))
+	{
+		return false;
+	}
+	return true;
+
+}
