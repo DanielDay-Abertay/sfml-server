@@ -11,6 +11,13 @@ struct playerInfo
 	bool timeSent = false;
 };
 
+struct playerPos
+{
+	sf::Uint32 timeStamp = NULL;
+	float xPos;
+	float yPos;
+};
+
 class Server
 {
 public:
@@ -35,7 +42,7 @@ protected:
 	
 	CustomPacket pack;
 	playerInfo info;
-
+	playerPos pos;
 
 
 	sf::Packet sentPacket;

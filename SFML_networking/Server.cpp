@@ -113,6 +113,9 @@ void Server::listener()
 			cout << "all good" << endl;
 		}
 	}
+
+
+	
 	
 }
 
@@ -140,10 +143,25 @@ bool Server::receivePacket()
 	{
 		return false;
 	}
-	if (!pack.checkPacket(receivedPacket, &info))
+	cout << receivedPacket.getDataSize() << endl;
+	if (receivedPacket.getDataSize() == 12)
 	{
-		return false;
+		if (pack.checkPacket(receivedPacket, &pos))
+		{
+			cout << pos.xPos << " " << pos.yPos << endl;
+			return true;
+		}
 	}
-	return true;
+	else if (receivedPacket.getDataSize() == 8)
+	{
+		if (pack.checkPacket(receivedPacket, &info))
+		{
+			
+			return true;
+		}
+	}
+	
+
+	return false;
 
 }
