@@ -68,7 +68,7 @@ int main()
 
 			server.listener();
 			
-			scene.update(deltaTime, sf::Vector2f(server.getPos().xPos, server.getPos().yPos));
+			scene.update(deltaTime, &server.getPos());
 			scene.render();
 			//server.confirmTimeStamp();
 		}

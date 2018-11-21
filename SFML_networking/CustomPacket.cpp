@@ -13,7 +13,7 @@ CustomPacket::~CustomPacket()
 bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 {
 	packet.clear();
-	if (packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent)
+	if (packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID)
 	{
 		return true;
 	}
@@ -22,7 +22,7 @@ bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 
 bool CustomPacket::checkPacket(sf::Packet & packet, playerInfo* info)
 {
-	if (packet >> info->connectRequest >> info->connectAccepted >> info->timeStamp >> info->timeOkay >> info->timeSent)
+	if (packet >> info->connectRequest >> info->connectAccepted >> info->timeStamp >> info->timeOkay >> info->timeSent >> info->ID)
 	{
 		packet.clear();
 		return true;
@@ -42,21 +42,21 @@ bool CustomPacket::checkPacket(sf::Packet & packet, playerPos* pos)
 
 sf::Packet& operator <<(sf::Packet& packet, const playerInfo& info)
 {
-	return packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent;
+	return packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, playerInfo& info)
 {
-	return packet >> info.connectRequest >> info.connectAccepted >> info.timeStamp >> info.timeOkay >>info.timeSent;
+	return packet >> info.connectRequest >> info.connectAccepted >> info.timeStamp >> info.timeOkay >>info.timeSent >> info.ID;
 }
 
 
 sf::Packet& operator <<(sf::Packet& packet, const playerPos& pos)
 {
-	return packet << pos.timeStamp << pos.xPos << pos.yPos;
+	return packet << pos.timeStamp << pos.xPos << pos.yPos << pos.ID;
 }
 
 sf::Packet& operator >> (sf::Packet& packet, playerPos& pos)
 {
-	return packet >> pos.timeStamp >> pos.xPos >> pos.yPos;
+	return packet >> pos.timeStamp >> pos.xPos >> pos.yPos >> pos.ID;
 }

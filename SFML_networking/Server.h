@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML\Network.hpp>
 #include "CustomPacket.h"
+#include <vector>
 
 struct playerInfo
 {
@@ -9,6 +10,7 @@ struct playerInfo
 	sf::Uint32 timeStamp = NULL;
 	bool timeOkay = false;
 	bool timeSent = false;
+	int ID;
 };
 
 struct playerPos
@@ -16,6 +18,7 @@ struct playerPos
 	sf::Uint32 timeStamp = NULL;
 	float xPos;
 	float yPos;
+	int ID;
 };
 
 class Server
@@ -32,7 +35,7 @@ public:
 	bool sendPacket(sf::Packet packet);
 	bool receivePacket();
 
-	playerPos getPos() { return pos; }
+	std::vector<playerPos> getPos() { return playerPosVec; }
 
 
 protected:
@@ -43,6 +46,8 @@ protected:
 	sf::Clock clock;
 	
 	CustomPacket pack;
+	std::vector<playerInfo> playerInfoVec;
+	std::vector<playerPos> playerPosVec;
 	playerInfo info;
 	playerPos pos;
 
@@ -54,5 +59,9 @@ protected:
 	sf::IpAddress cliant;
 
 	bool once = false;
+
+	int count;
+
+	int idCount;
 };
 

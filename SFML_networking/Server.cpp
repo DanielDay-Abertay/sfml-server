@@ -6,6 +6,8 @@ Server::Server()
 	socket.setBlocking(false);
 	timeStamp = clock.getElapsedTime().asMilliseconds();
 	port = 4444;
+	count = 0;
+	idCount = 0;
 }
 
 Server::~Server()
@@ -60,8 +62,11 @@ void Server::listener()
 
 	if (info.connectRequest == true && info.connectAccepted == false)
 	{
+		//idCount++;
 		cout << "acceppted connection"<< endl;
 		info.connectAccepted = true;
+		info.ID = idCount;
+		playerInfoVec.push_back(info);
 		if (!pack.fillPacket(info, sentPacket))
 		{
 			return;
@@ -79,9 +84,10 @@ void Server::listener()
 	{
 		sf::Packet packetnew;
 		
-		info.timeStamp = getTimeStamp();
-		info.timeSent = true;
-		if (!pack.fillPacket(info, sentPacket))
+		
+		playerInfoVec[info.ID].timeStamp = getTimeStamp();
+		playerInfoVec[info.ID].timeSent = true;
+		if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 		{
 			
 			cout << "something went wrong" << endl;
@@ -91,16 +97,16 @@ void Server::listener()
 		{
 			cout << "failed to send" << endl;
 		}
-		cout << "time stmap =" << info.timeStamp << endl;
+		cout << "time stamp =" << getTimeStamp() << endl;
 		return;
 	}
 
-	if (info.timeSent)
+	if (info.timeSent && info.timeOkay == false)
 	{
 		if (info.timeStamp < getTimeStamp() + 100 )
 		{
-			info.timeOkay = true;
-			if (!pack.fillPacket(info, sentPacket))
+			playerInfoVec[info.ID].timeOkay = true;
+			if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 			{
 
 				cout << "something went wrong" << endl;
@@ -111,6 +117,9 @@ void Server::listener()
 				cout << "failed to send" << endl;
 			}
 			cout << "all good" << endl;
+			playerPos pos;
+			pos.ID = info.ID;
+			playerPosVec.push_back(pos);
 		}
 	}
 
@@ -143,16 +152,23 @@ bool Server::receivePacket()
 	{
 		return false;
 	}
-	cout << receivedPacket.getDataSize() << endl;
-	if (receivedPacket.getDataSize() == 12)
+	//cout << receivedPacket.getDataSize() << endl;
+	if (receivedPacket.getDataSize() == 16)
 	{
 		if (pack.checkPacket(receivedPacket, &pos))
 		{
-			cout << pos.xPos << " " << pos.yPos << endl;
+			count++;
+			if (count = 20)
+			{
+				cout << "server time is " << getTimeStamp() << " packet sent at " << pos.timeStamp << " local time" << endl;
+				count = 0;
+			}
+			playerPosVec[pos.ID] = pos;
+			//
 			return true;
 		}
 	}
-	else if (receivedPacket.getDataSize() == 8)
+	else if (receivedPacket.getDataSize() == 12)
 	{
 		if (pack.checkPacket(receivedPacket, &info))
 		{
