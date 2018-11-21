@@ -32,6 +32,8 @@ public:
 	bool sendPacket(sf::Packet packet);
 	bool receivePacket();
 
+	playerPos getPos() { return pos; }
+
 
 protected:
 

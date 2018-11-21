@@ -25,7 +25,7 @@ int main()
 
 	
 	Scene scene(&window, &input);
-	//scene.init();
+//	scene.init();
 
 
 	while (window.isOpen())
@@ -64,9 +64,12 @@ int main()
 			}
 		}
 		if (!close) {
-			//deltaTime = clock.restart().asSeconds();
+			deltaTime = clock.restart().asSeconds();
 
 			server.listener();
+			
+			scene.update(deltaTime, sf::Vector2f(server.getPos().xPos, server.getPos().yPos));
+			scene.render();
 			//server.confirmTimeStamp();
 		}
 		
