@@ -181,3 +181,17 @@ bool Server::receivePacket()
 	return false;
 
 }
+
+void Server::sendInfo()
+{
+	if (!pack.fillPacket(other, sentPacket))
+	{
+		cout << "oh dear" << endl;
+		return;
+	}
+	if (!sendPacket(sentPacket))
+	{
+
+		cout << "failed to send" << endl;
+	}
+}

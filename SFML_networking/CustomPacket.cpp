@@ -19,6 +19,15 @@ bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 	}
 	return false;
 }
+bool CustomPacket::fillPacket(otherPlayerInfo &other, sf::Packet& packet)
+{
+	packet.clear();
+	packet << static_cast<sf::Uint32>(other.networkPlayerPos.size());
+	for (std::list<playerPos>::const_iterator it = other.networkPlayerPos.begin(); it != other.networkPlayerPos.end(); ++it)
+		packet << *it;
+
+	return true;
+}
 
 bool CustomPacket::checkPacket(sf::Packet & packet, playerInfo* info)
 {

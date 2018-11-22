@@ -2,6 +2,7 @@
 #include <SFML\Network.hpp>
 #include "CustomPacket.h"
 #include <vector>
+#include <list>
 
 struct playerInfo
 {
@@ -20,6 +21,10 @@ struct playerPos
 	float yPos;
 	int ID;
 };
+struct otherPlayerInfo
+{
+	std::list<playerPos> networkPlayerPos;
+};
 
 class Server
 {
@@ -36,6 +41,9 @@ public:
 	bool receivePacket();
 
 	std::vector<playerPos> getPos() { return playerPosVec; }
+
+
+	void sendInfo();
 
 
 protected:
@@ -63,5 +71,7 @@ protected:
 	int count;
 
 	int idCount;
+
+	otherPlayerInfo other;
 };
 
