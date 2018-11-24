@@ -31,6 +31,7 @@ bool CustomPacket::fillPacket(otherPlayerInfo &other, sf::Packet& packet)
 
 bool CustomPacket::checkPacket(sf::Packet & packet, playerInfo* info)
 {
+	
 	if (packet >> info->connectRequest >> info->connectAccepted >> info->timeStamp >> info->timeOkay >> info->timeSent >> info->ID)
 	{
 		packet.clear();

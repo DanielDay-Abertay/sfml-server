@@ -98,7 +98,7 @@ void Server::listener()
 			cout << "failed to send" << endl;
 		}
 		cout << "time stamp =" << getTimeStamp() << endl;
-		return;
+ 		return;
 	}
 
 	if (info.timeSent && info.timeOkay == false)
@@ -120,7 +120,7 @@ void Server::listener()
 			playerPos pos;
 			pos.ID = info.ID;
 			playerPosVec.push_back(pos);
-
+			info.timeOkay = true; //will need to change 
 		}
 	}
 
@@ -138,7 +138,7 @@ sf::Uint32 Server::getTimeStamp()
 
 bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
 {
-	port = 4444; //i have no idea why it forgets the port... i dont think it gets re-set... need to ask
+	port = 4441; //i have no idea why it forgets the port... i dont think it gets re-set... need to ask
 	if (socket.send(packet, ip, port) != sf::Socket::Done)
 	{
 		return false;
@@ -153,7 +153,9 @@ bool Server::receivePacket()
 	{
 		return false;
 	}
-	//cout << receivedPacket.getDataSize() << endl;
+	//cout << cliant << endl;
+
+
 	if (receivedPacket.getDataSize() == 16)
 	{
 		if (pack.checkPacket(receivedPacket, &pos))
@@ -161,7 +163,7 @@ bool Server::receivePacket()
 			count++;
 			if (count = 20)
 			{
-				cout << "server time is " << getTimeStamp() << " packet sent at " << pos.timeStamp << " local time" << endl;
+				//cout << "server time is " << getTimeStamp() << " packet sent at " << pos.timeStamp << " local time" << endl;
 				count = 0;
 			}
 			playerPosVec[pos.ID] = pos;
