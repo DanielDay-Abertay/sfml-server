@@ -22,9 +22,9 @@ bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 bool CustomPacket::fillPacket(otherPlayerInfo &other, sf::Packet& packet)
 {
 	packet.clear();
-	packet << static_cast<sf::Uint32>(other.networkPlayerPos.size());
-	for (std::list<playerPos>::const_iterator it = other.networkPlayerPos.begin(); it != other.networkPlayerPos.end(); ++it)
-		packet << *it;
+	packet << other.networkPlayerPos.size();	
+	for (std::list<playerPos>::iterator it = other.networkPlayerPos.begin(); it != other.networkPlayerPos.end(); ++it)
+		packet << it->timeStamp << it->xPos << it->yPos << it->ID;
 
 	return true;
 }

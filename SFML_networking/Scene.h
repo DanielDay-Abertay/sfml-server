@@ -3,6 +3,7 @@
 #include <windows.h>
 #include "Input.h"
 #include "Particle.h"
+#include <list>
 
 struct playerPos;
 class Scene

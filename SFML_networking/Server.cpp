@@ -72,7 +72,7 @@ void Server::listener()
 			return;
 		}
 
-		if (!sendPacket(sentPacket))
+		if (!sendPacket(sentPacket, cliant))
 		{
 			cout << "failed to send" << endl;
 		}
@@ -93,7 +93,7 @@ void Server::listener()
 			cout << "something went wrong" << endl;
 		}
 
-		if (!sendPacket(sentPacket))
+		if (!sendPacket(sentPacket, cliant))
 		{
 			cout << "failed to send" << endl;
 		}
@@ -112,7 +112,7 @@ void Server::listener()
 				cout << "something went wrong" << endl;
 			}
 
-			if (!sendPacket(sentPacket))
+			if (!sendPacket(sentPacket, cliant))
 			{
 				cout << "failed to send" << endl;
 			}
@@ -120,6 +120,7 @@ void Server::listener()
 			playerPos pos;
 			pos.ID = info.ID;
 			playerPosVec.push_back(pos);
+
 		}
 	}
 
@@ -135,10 +136,10 @@ sf::Uint32 Server::getTimeStamp()
 
 }
 
-bool Server::sendPacket(sf::Packet packet)
+bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
 {
-
-	if (socket.send(packet, cliant, port) != sf::Socket::Done)
+	port = 4444; //i have no idea why it forgets the port... i dont think it gets re-set... need to ask
+	if (socket.send(packet, ip, port) != sf::Socket::Done)
 	{
 		return false;
 	}
@@ -172,7 +173,15 @@ bool Server::receivePacket()
 	{
 		if (pack.checkPacket(receivedPacket, &info))
 		{
-			
+			for (int i = 0; i < ipVec.size(); i++)
+			{
+				if (cliant == ipVec[i])
+				{
+					return true;
+				}
+
+			}
+			ipVec.push_back(cliant);
 			return true;
 		}
 	}
@@ -189,9 +198,13 @@ void Server::sendInfo()
 		cout << "oh dear" << endl;
 		return;
 	}
-	if (!sendPacket(sentPacket))
+	for (int i = 0; i < ipVec.size(); i++)
 	{
+		if (!sendPacket(sentPacket, ipVec[i]))
+		{
+			return;
 
-		cout << "failed to send" << endl;
+		}
 	}
+	
 }

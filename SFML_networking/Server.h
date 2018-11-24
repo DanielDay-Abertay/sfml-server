@@ -23,6 +23,7 @@ struct playerPos
 };
 struct otherPlayerInfo
 {
+	int size;
 	std::list<playerPos> networkPlayerPos;
 };
 
@@ -37,7 +38,7 @@ public:
 	sf::Uint32 getTimeStamp();
 
 
-	bool sendPacket(sf::Packet packet);
+	bool sendPacket(sf::Packet packet, sf::IpAddress ip);
 	bool receivePacket();
 
 	std::vector<playerPos> getPos() { return playerPosVec; }
@@ -73,5 +74,7 @@ protected:
 	int idCount;
 
 	otherPlayerInfo other;
+
+	std::vector<sf::IpAddress> ipVec;
 };
 
