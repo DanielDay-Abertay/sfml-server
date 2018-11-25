@@ -27,6 +27,7 @@ struct otherPlayerInfo
 {
 	int size;
 	std::list<playerPos> networkPlayerPos;
+	int padding;
 };
 
 class Server

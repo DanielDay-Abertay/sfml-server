@@ -215,6 +215,7 @@ void Server::sendInfo()
 	}
 	for (int i = 0; i < ipVec.size(); i++)
 	{
+	
 		if (!sendPacket(sentPacket, ipVec[i]))
 		{
 			return;

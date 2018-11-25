@@ -15,6 +15,7 @@ bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 	packet.clear();
 	if (packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID << info.seed << info.padding)
 	{
+		std::cout << packet.getDataSize() << std::endl;
 		return true;
 	}
 	return false;
@@ -22,9 +23,14 @@ bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 bool CustomPacket::fillPacket(otherPlayerInfo &other, sf::Packet& packet)
 {
 	packet.clear();
-	packet << other.networkPlayerPos.size();	
+	other.size = other.networkPlayerPos.size();
+	packet << other.size;	
 	for (std::list<playerPos>::iterator it = other.networkPlayerPos.begin(); it != other.networkPlayerPos.end(); ++it)
+	{
 		packet << it->timeStamp << it->xPos << it->yPos << it->ID;
+	}
+	packet << other.padding;
+	std::cout << packet.getDataSize() << std::endl;
 
 	return true;
 }
