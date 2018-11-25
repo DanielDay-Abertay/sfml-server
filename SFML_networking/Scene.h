@@ -4,12 +4,14 @@
 #include "Input.h"
 #include "Particle.h"
 #include <list>
-
+#include "Emitter.h"
+#include "Server.h"
 struct playerPos;
+
 class Scene
 {
 public:
-	Scene(sf::RenderWindow* hwnd, Input* in);
+	Scene(sf::RenderWindow* hwnd, Input* in, Server* ser);
 	~Scene();
 
 	void update(float dt, std::vector<playerPos> *playerPosVec);
@@ -22,8 +24,7 @@ private:
 	void endRender();
 	sf::RenderWindow* window;
 	Input* input;
-
-	std::vector<Particle> parVec;
-	Particle par;
+	Server* server;
+	std::vector<Emitter> parVec;
 };
 

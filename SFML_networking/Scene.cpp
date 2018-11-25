@@ -2,11 +2,11 @@
 #include "Server.h"
 
 
-Scene::Scene(sf::RenderWindow* hwnd, Input* in)
+Scene::Scene(sf::RenderWindow* hwnd, Input* in, Server* ser)
 {
 	window = hwnd;
 	input = in;
-	par.setSize(sf::Vector2f(50,50));
+	server = ser;
 }
 
 
@@ -18,13 +18,21 @@ void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 {
 	if (playerPosVec->size() != parVec.size())
 	{
-		parVec.push_back(par);
+		Emitter em;
+
+		float x = playerPosVec->back().xPos;
+		float y = playerPosVec->back().yPos;
+		sf::Vector2f pos{ x, y };
+		em.init(1000, pos, nullptr, server->getSeed());
+		parVec.push_back(em);
 	}
 	for (int i = 0; i < playerPosVec->size(); i++)
 	{
 		float x = playerPosVec->at(i).xPos;
 		float y = playerPosVec->at(i).yPos;
-		parVec[i].setPosition(sf::Vector2f(x, y));
+		parVec[i].setLocation(sf::Vector2f(x, y));
+		parVec[i].update(dt);
+		//parVec[i].setPosition(sf::Vector2f(x, y));
 	}
 	
 
@@ -40,7 +48,7 @@ void Scene::render()
 	beginRender();
 	for (auto it : parVec)
 	{
-		window->draw(it);
+		it.render(window);
 	}
 	
 	endRender();

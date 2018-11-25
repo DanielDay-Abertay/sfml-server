@@ -12,6 +12,8 @@ struct playerInfo
 	bool timeOkay = false;
 	bool timeSent = false;
 	int ID;
+	int seed;
+	int padding;
 };
 
 struct playerPos
@@ -41,10 +43,12 @@ public:
 	bool sendPacket(sf::Packet packet, sf::IpAddress ip);
 	bool receivePacket();
 
-	std::vector<playerPos> getPos() { return playerPosVec; }
+	std::vector<playerPos>* getPos();
 
 
 	void sendInfo();
+
+	int getSeed() { return seed; }
 
 
 protected:
@@ -76,5 +80,7 @@ protected:
 	otherPlayerInfo other;
 
 	std::vector<sf::IpAddress> ipVec;
+
+	int seed;
 };
 

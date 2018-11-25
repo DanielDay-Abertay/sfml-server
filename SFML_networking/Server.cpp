@@ -8,6 +8,8 @@ Server::Server()
 	port = 4444;
 	count = 0;
 	idCount = 0;
+	seed = time(0);
+	std::cout << "seed = " << seed << endl;
 }
 
 Server::~Server()
@@ -66,6 +68,7 @@ void Server::listener()
 		cout << "acceppted connection"<< endl;
 		info.connectAccepted = true;
 		info.ID = idCount;
+		info.seed = seed;
 		playerInfoVec.push_back(info);
 		if (!pack.fillPacket(info, sentPacket))
 		{
@@ -171,7 +174,7 @@ bool Server::receivePacket()
 			return true;
 		}
 	}
-	else if (receivedPacket.getDataSize() == 12)
+	else if (receivedPacket.getDataSize() == 20)
 	{
 		if (pack.checkPacket(receivedPacket, &info))
 		{
@@ -210,3 +213,8 @@ void Server::sendInfo()
 	}
 	
 }
+std::vector<playerPos>* Server::getPos()
+{
+	return &playerPosVec;
+}
+

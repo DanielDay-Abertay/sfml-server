@@ -4,7 +4,7 @@
 class Sprite : public sf::RectangleShape
 {
 public:
-	Sprite(const sf::Vector2f & size = sf::Vector2f(0, 0));
+	Sprite(int seed, const sf::Vector2f & size = sf::Vector2f(0, 0));
 	~Sprite();
 
 	virtual void update(float dt) = 0;

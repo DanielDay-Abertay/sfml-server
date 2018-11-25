@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-Sprite::Sprite(const sf::Vector2f & size) : RectangleShape(size)
+Sprite::Sprite(int seed, const sf::Vector2f & size) : RectangleShape(size)
 {
 	alive = false;
 }

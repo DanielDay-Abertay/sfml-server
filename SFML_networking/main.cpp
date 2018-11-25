@@ -24,7 +24,7 @@ int main()
 	
 
 	
-	Scene scene(&window, &input);
+	Scene scene(&window, &input, &server);
 //	scene.init();
 
 
@@ -68,7 +68,7 @@ int main()
 
 			server.listener();
 			server.sendInfo();
-			scene.update(deltaTime, &server.getPos());
+			scene.update(deltaTime, server.getPos());
 			scene.render();
 			//server.confirmTimeStamp();
 		}
