@@ -198,6 +198,16 @@ bool Server::receivePacket()
 
 void Server::sendInfo()
 {
+	other.networkPlayerPos.clear();
+	for (auto it : playerPosVec)
+	{
+		if (it.timeStamp != NULL)
+		{
+			other.networkPlayerPos.push_back(it);
+		}
+		
+	}
+
 	if (!pack.fillPacket(other, sentPacket))
 	{
 		cout << "oh dear" << endl;
