@@ -25,6 +25,7 @@ void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 		sf::Vector2f pos{ x, y };
 		em.init(10, pos, nullptr, server->getSeed());
 		parVec.push_back(em);
+		return;
 	}
 	for (int i = 0; i < playerPosVec->size(); i++)
 	{

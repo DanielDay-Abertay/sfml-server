@@ -80,7 +80,6 @@ void Server::listener()
 		{
 			if (setUpStep3())
 			{
-				setUpStep3();
 				return;
 			}
 			
