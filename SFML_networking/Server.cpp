@@ -62,77 +62,85 @@ void Server::listener()
 		return;
 	}
 
-	if (info.connectRequest == true && info.connectAccepted == false)
+	if (!connectedVec.back().finishedSetUp)
 	{
-		//idCount++;
-		cout << "acceppted connection"<< endl;
-		info.connectAccepted = true;
-		info.ID = idCount;
-		info.seed = seed;
-		playerInfoVec.push_back(info);
-		if (!pack.fillPacket(info, sentPacket))
+		if (info.connectRequest && !info.connectAccepted)
 		{
-			return;
-		}
+			//set inital info to send back to confurm connection
+			cout << "acceppted connection" << endl;
+			info.connectAccepted = true;
+			info.ID = playerInfoVec.size();
+			info.seed = seed;
+			playerInfoVec.push_back(info);
 
-		if (!sendPacket(sentPacket, ipVec.back()))
-		{
-			cout << "failed to send" << endl;
+			//fill the packet and check that it went ok
+			if (!pack.fillPacket(info, sentPacket))
+			{
+				cout << "failed to fill" << endl;
+				return;
+			}
+			//send packet and see if its ok
+			if (!sendPacket(sentPacket, connectedVec.back().ip))
+			{
+				cout << "failed to send" << endl;
+				return;
+			}
+			
 		}
-		//return;
-	}
-	
-	
-	if (info.connectAccepted == true && info.connectRequest == true && info.timeSent == false)
-	{
-		sf::Packet packetnew;
-		cout << "sending timestamp" << endl;
-		
-		playerInfoVec[info.ID].timeStamp = getTimeStamp();
-		playerInfoVec[info.ID].timeSent = true;
-		if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
+		if (info.connectAccepted && !info.timeSent)
 		{
 			
-			cout << "something went wrong" << endl;
-		}
-
-		if (!sendPacket(sentPacket, ipVec.back()))
-		{
-			cout << "failed to send" << endl;
-		}
-		cout << "time stamp =" << getTimeStamp() << endl;
- 		return;
-	}
-
-	if (info.timeSent && info.timeOkay == false)
-	{
-		cout << "time stamp sent back" << endl;
-		if (info.timeStamp < getTimeStamp() + 100 )
-		{
-			playerInfoVec[info.ID].timeOkay = true;
+			//setting up more info to establish connection - sending server time to establish latecny
+			playerInfoVec[info.ID].timeStamp = getTimeStamp();
+			playerInfoVec[info.ID].timeSent = true;
 			if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 			{
 
 				cout << "something went wrong" << endl;
+				playerInfoVec[info.ID].timeSent = false;
 			}
 
-			if (!sendPacket(sentPacket, ipVec.back()))
+			if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
 			{
 				cout << "failed to send" << endl;
+				return;
 			}
-			cout << "all good" << endl;
+			cout << "sent message" << endl;
+			cout << "time stamp =" << info.timeStamp << endl;
+			return;
+		}
+
+		if (playerInfoVec[info.ID].timeSent && !playerInfoVec[info.ID].timeOkay)
+		{
+			cout << "time stamp sent back" << endl;
+			cout << "the latency between cliant and server is " << getTime() - playerInfoVec[info.ID].timeStamp << endl;
+			playerInfoVec[info.ID].timeOkay = true;
+
+			if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
+			{
+
+				cout << "something went wrong" << endl;
+				return;
+			}
+
+			if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
+			{
+				cout << "failed to send" << endl;
+				return;
+			}
+
+			cout << "connection established" << endl;
 			playerPos pos;
 			pos.ID = info.ID;
 			playerPosVec.push_back(pos);
-			cout << "added" << endl;
-			info.timeOkay = true; //will need to change 
+			cout << "position added" << endl;
+			connectedVec[info.ID].finishedSetUp = true;
+			return;
 
-			resetInfo();
 		}
+
+
 	}
-
-
-	
 	
 }
 
@@ -156,7 +164,8 @@ bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
 
 bool Server::receivePacket()
 {
-	if (socket.receive(receivedPacket, cliant, port) != sf::Socket::Done)
+	sf::IpAddress ipaddress;
+	if (socket.receive(receivedPacket, ipaddress, port) != sf::Socket::Done)
 	{
 		return false;
 	}
@@ -167,12 +176,6 @@ bool Server::receivePacket()
 	{
 		if (pack.checkPacket(receivedPacket, &pos))
 		{
-			count++;
-			if (count = 20)
-			{
-				//cout << "server time is " << getTimeStamp() << " packet sent at " << pos.timeStamp << " local time" << endl;
-				count = 0;
-			}
 			playerPosVec[pos.ID] = pos;
 			//
 			return true;
@@ -183,15 +186,22 @@ bool Server::receivePacket()
 		if (pack.checkPacket(receivedPacket, &info))
 		{
 			cout << info.connectAccepted << " " << info.connectRequest << " " << info.ID << " " << info.timeOkay << " " << info.timeSent << endl;
-			for (int i = 0; i < ipVec.size(); i++)
+			for (int i = 0; i < connectedVec.size(); i++)
 			{
-				if (cliant == ipVec[i])
+				if (info.ID == connectedVec[i].id)
 				{
 					return true;
 				}
 
 			}
-			ipVec.push_back(cliant);
+			
+			sf::IpAddress test = ipaddress;
+			setUp tempSetUp;
+			tempSetUp.ip = ipaddress;
+			tempSetUp.id = connectedVec.size();
+			tempSetUp.finishedSetUp = false;
+			connectedVec.push_back(tempSetUp);
+			cout << "connected vec added" << endl;
 			return true;
 		}
 	}
@@ -204,13 +214,15 @@ bool Server::receivePacket()
 void Server::sendInfo()
 {
 	other.networkPlayerPos.clear();
-	for (auto it : playerPosVec)
+	for (int i = 0; i < playerPosVec.size(); i++)
 	{
-		if (it.timeStamp != NULL)
+		if (connectedVec[i].finishedSetUp)
 		{
-			other.networkPlayerPos.push_back(it);
+			if (playerPosVec[i].timeStamp != NULL)
+			{
+				other.networkPlayerPos.push_back(playerPosVec[i]);
+			}
 		}
-		
 	}
 
 	if (!pack.fillPacket(other, sentPacket))
@@ -218,10 +230,10 @@ void Server::sendInfo()
 		cout << "oh dear" << endl;
 		return;
 	}
-	for (int i = 0; i < ipVec.size(); i++)
+	for (int i = 0; i < connectedVec.size(); i++)
 	{
 	
-		if (!sendPacket(sentPacket, ipVec[i]))
+		if (!sendPacket(sentPacket, connectedVec[i].ip))
 		{
 			return;
 

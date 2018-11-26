@@ -8,7 +8,7 @@ struct playerInfo
 {
 	bool connectRequest = false;
 	bool connectAccepted = false;
-	sf::Uint32 timeStamp = NULL;
+	sf::Uint32 timeStamp;
 	bool timeOkay = false;
 	bool timeSent = false;
 	int ID;
@@ -28,6 +28,14 @@ struct otherPlayerInfo
 	int size;
 	std::list<playerPos> networkPlayerPos;
 	int padding;
+};
+
+struct setUp
+{
+	sf::IpAddress ip;
+	int id;
+	bool finishedSetUp = false;
+	sf::Int32 latency;
 };
 
 class Server
@@ -80,7 +88,7 @@ protected:
 
 	otherPlayerInfo other;
 
-	std::vector<sf::IpAddress> ipVec;
+	std::vector<setUp> connectedVec;
 
 	int seed;
 };
