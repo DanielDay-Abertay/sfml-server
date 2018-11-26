@@ -36,6 +36,7 @@ struct setUp
 	int id;
 	bool finishedSetUp = false;
 	sf::Int32 latency;
+	int stage;
 };
 
 class Server
@@ -49,6 +50,7 @@ public:
 	sf::Uint32 getTimeStamp();
 	sf::Uint32 getTime() { return clock.getElapsedTime().asMilliseconds(); }
 
+
 	bool sendPacket(sf::Packet packet, sf::IpAddress ip);
 	bool receivePacket();
 
@@ -58,6 +60,12 @@ public:
 	void sendInfo();
 
 	int getSeed() { return seed; }
+
+
+
+	bool setUpStep1();
+	bool setUpStep2();
+	bool setUpStep3();
 
 
 protected:

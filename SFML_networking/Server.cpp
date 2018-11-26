@@ -66,76 +66,24 @@ void Server::listener()
 	{
 		if (info.connectRequest && !info.connectAccepted)
 		{
-			//set inital info to send back to confurm connection
-			cout << "acceppted connection" << endl;
-			info.connectAccepted = true;
-			info.ID = playerInfoVec.size();
-			info.seed = seed;
-			playerInfoVec.push_back(info);
-
-			//fill the packet and check that it went ok
-			if (!pack.fillPacket(info, sentPacket))
-			{
-				cout << "failed to fill" << endl;
-				return;
-			}
-			//send packet and see if its ok
-			if (!sendPacket(sentPacket, connectedVec.back().ip))
-			{
-				cout << "failed to send" << endl;
-				return;
-			}
+			setUpStep1();
 			
 		}
 		if (info.connectAccepted && !info.timeSent)
 		{
 			
-			//setting up more info to establish connection - sending server time to establish latecny
-			playerInfoVec[info.ID].timeStamp = getTimeStamp();
-			playerInfoVec[info.ID].timeSent = true;
-			if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
-			{
-
-				cout << "something went wrong" << endl;
-				playerInfoVec[info.ID].timeSent = false;
-			}
-
-			if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
-			{
-				cout << "failed to send" << endl;
-				return;
-			}
-			cout << "sent message" << endl;
-			cout << "time stamp =" << info.timeStamp << endl;
+			setUpStep2();
 			return;
 		}
 
 		if (playerInfoVec[info.ID].timeSent && !playerInfoVec[info.ID].timeOkay)
 		{
-			cout << "time stamp sent back" << endl;
-			cout << "the latency between cliant and server is " << getTime() - playerInfoVec[info.ID].timeStamp << endl;
-			playerInfoVec[info.ID].timeOkay = true;
-
-			if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
+			if (setUpStep3())
 			{
-
-				cout << "something went wrong" << endl;
+				setUpStep3();
 				return;
 			}
-
-			if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
-			{
-				cout << "failed to send" << endl;
-				return;
-			}
-
-			cout << "connection established" << endl;
-			playerPos pos;
-			pos.ID = info.ID;
-			playerPosVec.push_back(pos);
-			cout << "position added" << endl;
-			connectedVec[info.ID].finishedSetUp = true;
-			return;
+			
 
 		}
 
@@ -243,6 +191,79 @@ void Server::sendInfo()
 		
 	}
 	
+}
+bool Server::setUpStep1()
+{
+	//set inital info to send back to confurm connection
+	cout << "acceppted connection" << endl;
+	info.connectAccepted = true;
+	info.ID = playerInfoVec.size();
+	info.seed = seed;
+	playerInfoVec.push_back(info);
+
+	//fill the packet and check that it went ok
+	if (!pack.fillPacket(info, sentPacket))
+	{
+		cout << "failed to fill" << endl;
+		return false;
+	}
+	//send packet and see if its ok
+	if (!sendPacket(sentPacket, connectedVec.back().ip))
+	{
+		cout << "failed to send" << endl;
+		return false;
+	}
+	return true;
+}
+bool Server::setUpStep2()
+{
+	// setting up more info to establish connection - sending server time to establish latecny
+	playerInfoVec[info.ID].timeStamp = getTimeStamp();
+	playerInfoVec[info.ID].timeSent = true;
+	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
+	{
+
+		cout << "something went wrong" << endl;
+		playerInfoVec[info.ID].timeSent = false;
+		return false;
+	}
+
+	if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
+	{
+		cout << "failed to send" << endl;
+		return false;;
+	}
+	cout << "sent message" << endl;
+	cout << "time stamp =" << info.timeStamp << endl;
+	return true;
+}
+bool Server::setUpStep3()
+{
+	cout << "time stamp sent back" << endl;
+	cout << "the latency between cliant and server is " << getTime() - playerInfoVec[info.ID].timeStamp << endl;
+	playerInfoVec[info.ID].timeOkay = true;
+
+	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
+	{
+
+		cout << "something went wrong" << endl;
+		return false;
+	}
+
+	if (!sendPacket(sentPacket, connectedVec[info.ID].ip))
+	{
+		cout << "failed to send" << endl;
+		return false;
+	}
+
+	cout << "connection established" << endl;
+	playerPos pos;
+	pos.ID = info.ID;
+	playerPosVec.push_back(pos);
+	cout << "position added" << endl;
+	connectedVec[info.ID].finishedSetUp = true;
+
+	return true;
 }
 std::vector<playerPos>* Server::getPos()
 {
