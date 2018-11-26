@@ -246,15 +246,4 @@ std::vector<playerPos>* Server::getPos()
 	return &playerPosVec;
 }
 
-void Server::resetInfo()
-{
-	info.connectRequest = false;
-	info.connectAccepted = false;
-	info.timeStamp = NULL;
-	info.timeOkay = false;
-	info.timeSent = false;
-	info.ID = NULL;
-	info.seed = NULL;
-	info.padding = NULL;
-}
 
