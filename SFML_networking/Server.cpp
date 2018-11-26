@@ -232,12 +232,15 @@ void Server::sendInfo()
 	}
 	for (int i = 0; i < connectedVec.size(); i++)
 	{
-	
-		if (!sendPacket(sentPacket, connectedVec[i].ip))
+		if (connectedVec[i].finishedSetUp)
 		{
-			return;
+			if (!sendPacket(sentPacket, connectedVec[i].ip))
+			{
+				return;
 
+			}
 		}
+		
 	}
 	
 }
