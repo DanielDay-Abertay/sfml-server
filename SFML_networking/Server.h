@@ -39,7 +39,7 @@ public:
 	void listener();
 	void confirmTimeStamp();
 	sf::Uint32 getTimeStamp();
-
+	sf::Uint32 getTime() { return clock.getElapsedTime().asMilliseconds(); }
 
 	bool sendPacket(sf::Packet packet, sf::IpAddress ip);
 	bool receivePacket();

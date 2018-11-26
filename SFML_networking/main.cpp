@@ -17,7 +17,7 @@ int main()
 	float deltaTime;
 	bool close = false;
 	Server server;
-
+	int timeSent=0;
 	
 
 	server.udpBind();
@@ -67,7 +67,13 @@ int main()
 			deltaTime = clock.restart().asSeconds();
 
 			server.listener();
-			server.sendInfo();
+
+			if (server.getTime() - 50 > timeSent)
+			{
+				server.sendInfo();
+				timeSent = server.getTime();
+			}
+			
 			scene.update(deltaTime, server.getPos());
 			scene.render();
 			//server.confirmTimeStamp();
