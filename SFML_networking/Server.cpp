@@ -75,7 +75,7 @@ void Server::listener()
 			return;
 		}
 
-		if (!sendPacket(sentPacket, cliant))
+		if (!sendPacket(sentPacket, ipVec.back()))
 		{
 			cout << "failed to send" << endl;
 		}
@@ -86,7 +86,7 @@ void Server::listener()
 	if (info.connectAccepted == true && info.connectRequest == true && info.timeSent == false)
 	{
 		sf::Packet packetnew;
-		
+		cout << "sending timestamp" << endl;
 		
 		playerInfoVec[info.ID].timeStamp = getTimeStamp();
 		playerInfoVec[info.ID].timeSent = true;
@@ -96,7 +96,7 @@ void Server::listener()
 			cout << "something went wrong" << endl;
 		}
 
-		if (!sendPacket(sentPacket, cliant))
+		if (!sendPacket(sentPacket, ipVec.back()))
 		{
 			cout << "failed to send" << endl;
 		}
@@ -106,6 +106,7 @@ void Server::listener()
 
 	if (info.timeSent && info.timeOkay == false)
 	{
+		cout << "time stamp sent back" << endl;
 		if (info.timeStamp < getTimeStamp() + 100 )
 		{
 			playerInfoVec[info.ID].timeOkay = true;
@@ -115,7 +116,7 @@ void Server::listener()
 				cout << "something went wrong" << endl;
 			}
 
-			if (!sendPacket(sentPacket, cliant))
+			if (!sendPacket(sentPacket, ipVec.back()))
 			{
 				cout << "failed to send" << endl;
 			}
@@ -123,7 +124,10 @@ void Server::listener()
 			playerPos pos;
 			pos.ID = info.ID;
 			playerPosVec.push_back(pos);
+			cout << "added" << endl;
 			info.timeOkay = true; //will need to change 
+
+			resetInfo();
 		}
 	}
 
@@ -178,6 +182,7 @@ bool Server::receivePacket()
 	{
 		if (pack.checkPacket(receivedPacket, &info))
 		{
+			cout << info.connectAccepted << " " << info.connectRequest << " " << info.ID << " " << info.timeOkay << " " << info.timeSent << endl;
 			for (int i = 0; i < ipVec.size(); i++)
 			{
 				if (cliant == ipVec[i])
@@ -227,5 +232,17 @@ void Server::sendInfo()
 std::vector<playerPos>* Server::getPos()
 {
 	return &playerPosVec;
+}
+
+void Server::resetInfo()
+{
+	info.connectRequest = false;
+	info.connectAccepted = false;
+	info.timeStamp = NULL;
+	info.timeOkay = false;
+	info.timeSent = false;
+	info.ID = NULL;
+	info.seed = NULL;
+	info.padding = NULL;
 }
 

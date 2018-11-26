@@ -45,7 +45,7 @@ public:
 	bool receivePacket();
 
 	std::vector<playerPos>* getPos();
-
+	void resetInfo();
 
 	void sendInfo();
 
