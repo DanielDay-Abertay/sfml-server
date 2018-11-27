@@ -45,7 +45,7 @@ bool CustomPacket::checkPacket(sf::Packet &packet, playerInfo *info)
 }
 bool CustomPacket::checkPacket(sf::Packet & packet, playerPos* pos)
 {
-	if (packet >> pos->timeStamp >> pos->xPos >> pos->yPos)
+	if (packet >> pos->timeStamp >> pos->xPos >> pos->yPos >>pos->ID)
 	{
 		packet.clear();
 		return true;

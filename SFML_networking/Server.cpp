@@ -10,6 +10,7 @@ Server::Server()
 	idCount = 0;
 	seed = time(0);
 	std::cout << "seed = " << seed << endl;
+	
 }
 
 Server::~Server()
@@ -121,10 +122,18 @@ bool Server::receivePacket()
 
 	if (receivedPacket.getDataSize() == 16)
 	{
-		if (pack.checkPacket(receivedPacket, &pos))
+		playerPos newPos;
+		if (pack.checkPacket(receivedPacket, &newPos))
 		{
-			playerPosVec[pos.ID] = pos;
-			//
+			//cout << "packet from " << pos.ID << endl;
+			if (newPos.ID == 1)
+			{
+				cout << "got it 1" << endl;
+			}
+			else
+				cout << "got 0" << endl;
+			playerPosVec[newPos.ID] = newPos;
+			newPos.ID = NULL;
 			return true;
 		}
 	}
@@ -135,7 +144,7 @@ bool Server::receivePacket()
 			cout << info.connectAccepted << " " << info.connectRequest << " " << info.ID << " " << info.timeOkay << " " << info.timeSent << endl;
 			for (int i = 0; i < connectedVec.size(); i++)
 			{
-				if (info.ID == connectedVec[i].id)
+				if (ipaddress == connectedVec[i].ip)
 				{
 					return true;
 				}

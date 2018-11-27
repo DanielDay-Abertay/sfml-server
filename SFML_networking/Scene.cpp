@@ -16,8 +16,10 @@ Scene::~Scene()
 
 void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 {
+	
 	if (playerPosVec->size() != parVec.size())
 	{
+
 		Emitter em;
 
 		float x = playerPosVec->back().xPos;
@@ -29,6 +31,7 @@ void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 	}
 	for (int i = 0; i < playerPosVec->size(); i++)
 	{
+		
 		float x = playerPosVec->at(i).xPos;
 		float y = playerPosVec->at(i).yPos;
 		parVec[i].setLocation(sf::Vector2f(x, y));
