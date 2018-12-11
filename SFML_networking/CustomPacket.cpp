@@ -13,7 +13,7 @@ CustomPacket::~CustomPacket()
 bool CustomPacket::fillPacket(playerInfo &info, sf::Packet& packet)
 {
 	packet.clear();
-	if (packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID << info.seed << info.padding)
+	if (packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID << info.seed << info.latency)
 	{
 		//std::cout << packet.getDataSize() << std::endl;
 		return true;
@@ -37,7 +37,7 @@ bool CustomPacket::fillPacket(otherPlayerInfo &other, sf::Packet& packet)
 
 bool CustomPacket::checkPacket(sf::Packet &packet, playerInfo *info)
 {
-	if (packet >> info->connectRequest >> info->connectAccepted >> info->timeStamp >> info->timeOkay >> info->timeSent >> info->ID >> info->seed >> info->padding)
+	if (packet >> info->connectRequest >> info->connectAccepted >> info->timeStamp >> info->timeOkay >> info->timeSent >> info->ID >> info->seed >> info->latency)
 	{
 		return true;
 	}
@@ -45,7 +45,7 @@ bool CustomPacket::checkPacket(sf::Packet &packet, playerInfo *info)
 }
 bool CustomPacket::checkPacket(sf::Packet & packet, playerPos* pos)
 {
-	if (packet >> pos->timeStamp >> pos->xPos >> pos->yPos)
+	if (packet >> pos->timeStamp >> pos->xPos >> pos->yPos >>pos->ID)
 	{
 		packet.clear();
 		return true;
@@ -56,12 +56,12 @@ bool CustomPacket::checkPacket(sf::Packet & packet, playerPos* pos)
 
 sf::Packet& operator <<(sf::Packet& packet, const playerInfo& info)
 {
-	return packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID << info.seed << info.padding;
+	return packet << info.connectRequest << info.connectAccepted << info.timeStamp << info.timeOkay << info.timeSent << info.ID << info.seed << info.latency;
 }
 
 sf::Packet& operator >>(sf::Packet& packet, playerInfo& info)
 {
-	return packet >> info.connectRequest >> info.connectAccepted >> info.timeStamp >> info.timeOkay >> info.timeSent >> info.ID >> info.seed >> info.padding;
+	return packet >> info.connectRequest >> info.connectAccepted >> info.timeStamp >> info.timeOkay >> info.timeSent >> info.ID >> info.seed >> info.latency;
 }
 
 

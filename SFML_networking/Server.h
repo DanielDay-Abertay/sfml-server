@@ -13,7 +13,7 @@ struct playerInfo
 	bool timeSent = false;
 	int ID;
 	int seed;
-	int padding;
+	int latency;
 };
 
 struct playerPos
@@ -78,6 +78,8 @@ protected:
 	CustomPacket pack;
 	std::vector<playerInfo> playerInfoVec;
 	std::vector<playerPos> playerPosVec;
+	std::vector<playerPos> playerPosVec1;
+	std::vector<playerPos> playerPosVec2;
 	playerInfo info;
 	playerPos pos;
 

@@ -10,6 +10,7 @@ Server::Server()
 	idCount = 0;
 	seed = time(0);
 	std::cout << "seed = " << seed << endl;
+	
 }
 
 Server::~Server()
@@ -121,10 +122,20 @@ bool Server::receivePacket()
 
 	if (receivedPacket.getDataSize() == 16)
 	{
-		if (pack.checkPacket(receivedPacket, &pos))
+		playerPos newPos;
+		if (pack.checkPacket(receivedPacket, &newPos))
 		{
-			playerPosVec[pos.ID] = pos;
-			//
+			//cout << "packet from " << pos.ID << endl;
+			if (newPos.ID == 1)
+			{
+				cout << "got it 1" << endl;
+			}
+			else
+				cout << "got 0" << endl;
+			playerPosVec2[newPos.ID] = playerPosVec1[newPos.ID];
+			playerPosVec1[newPos.ID] = playerPosVec[newPos.ID];
+			playerPosVec[newPos.ID] = newPos;
+			newPos.ID = NULL;
 			return true;
 		}
 	}
@@ -135,7 +146,7 @@ bool Server::receivePacket()
 			cout << info.connectAccepted << " " << info.connectRequest << " " << info.ID << " " << info.timeOkay << " " << info.timeSent << endl;
 			for (int i = 0; i < connectedVec.size(); i++)
 			{
-				if (info.ID == connectedVec[i].id)
+				if (ipaddress == connectedVec[i].ip)
 				{
 					return true;
 				}
@@ -239,8 +250,12 @@ bool Server::setUpStep2()
 bool Server::setUpStep3()
 {
 	cout << "time stamp sent back" << endl;
-	cout << "the latency between cliant and server is " << getTime() - playerInfoVec[info.ID].timeStamp << endl;
+	playerInfoVec[info.ID].latency = (getTime() - playerInfoVec[info.ID].timeStamp) / 2;
+	cout << "the latency between cliant and server is " << playerInfoVec[info.ID].latency << endl;
 	playerInfoVec[info.ID].timeOkay = true;
+	playerInfoVec[info.ID].timeStamp = getTime();
+	
+
 
 	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 	{
@@ -259,6 +274,8 @@ bool Server::setUpStep3()
 	playerPos pos;
 	pos.ID = info.ID;
 	playerPosVec.push_back(pos);
+	playerPosVec1.push_back(pos);
+	playerPosVec2.push_back(pos);
 	cout << "position added" << endl;
 	connectedVec[info.ID].finishedSetUp = true;
 
