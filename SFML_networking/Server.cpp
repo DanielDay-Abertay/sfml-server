@@ -16,12 +16,10 @@ Server::Server()
 Server::~Server()
 {
 }
-
-
+//bind the port, to hard coded value 4444
 void Server::udpBind()
 {
 	unsigned short port = 4444;
-
 
 	if (socket.bind(port) != sf::Socket::Done)
 	{
@@ -30,7 +28,7 @@ void Server::udpBind()
 	}
 	std::cout << "Server is listening to port " << port << ", waiting for a message... " << std::endl;
 }
-
+//all 
 void Server::listener()
 {
 	if (!receivePacket())
@@ -76,29 +74,26 @@ bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
 	}
 	return true;
 }
-
+//all incoming traffic comes through here
 bool Server::receivePacket()
 {
+	//local vairable to store the ipadress my be used to refrence later 
 	sf::IpAddress ipaddress;
 	if (socket.receive(receivedPacket, ipaddress, port) != sf::Socket::Done)
 	{
 		return false;
 	}
-	//cout << cliant << endl;
+	
 
-
+	//packets are sorted by size.... not a great idea for security
 	if (receivedPacket.getDataSize() == 16)
 	{
 		playerPos newPos;
+		//checks the validity of the packet
+		//this checks if this is incoming player info
 		if (pack.checkPacket(receivedPacket, &newPos))
 		{
-			//cout << "packet from " << pos.ID << endl;
-			if (newPos.ID == 1)
-			{
-				cout << "got it 1" << endl;
-			}
-			else
-				cout << "got 0" << endl;
+			//stores last 3 positoins. Would be used for server side prediction/ security checks/cheating. Not been implemented in server side
 			playerPosVec2[newPos.ID] = playerPosVec1[newPos.ID];
 			playerPosVec1[newPos.ID] = playerPosVec[newPos.ID];
 			playerPosVec[newPos.ID] = newPos;
@@ -106,11 +101,13 @@ bool Server::receivePacket()
 			return true;
 		}
 	}
+	//checks if incoming packets are connetion requests
 	else if (receivedPacket.getDataSize() == 20)
 	{
 		if (pack.checkPacket(receivedPacket, &info))
 		{
-			cout << info.connectAccepted << " " << info.connectRequest << " " << info.ID << " " << info.timeOkay << " " << info.timeSent << endl;
+			//loops through the connected cliant vector and checks if there ip is already stored. 
+			//if it is already stored no need to do anything, it will be handles somewhere else
 			for (int i = 0; i < connectedVec.size(); i++)
 			{
 				if (ipaddress == connectedVec[i].ip)
@@ -118,7 +115,7 @@ bool Server::receivePacket()
 					return true;
 				}
 			}
-
+			//if this is the first packet of the handshake set up there info
 			sf::IpAddress test = ipaddress;
 			setUp tempSetUp;
 			tempSetUp.ip = ipaddress;
@@ -132,12 +129,15 @@ bool Server::receivePacket()
 
 	return false;
 }
-
+//function packs all player positons into a a packet and sends to all cliants connected
 void Server::sendInfo()
 {
+	//clears the existing info in list
 	other.networkPlayerPos.clear();
+	//loops over stored data and puts back into list
 	for (int i = 0; i < playerPosVec.size(); i++)
 	{
+		//only sen info of the players who have completed setup
 		if (connectedVec[i].finishedSetUp)
 		{
 			if (playerPosVec[i].timeStamp != NULL)
@@ -146,12 +146,13 @@ void Server::sendInfo()
 			}
 		}
 	}
-
+	//send info to be put in packet
 	if (!pack.fillPacket(other, sentPacket))
 	{
 		cout << "oh dear" << endl;
 		return;
 	}
+	//sends to all cliants
 	for (int i = 0; i < connectedVec.size(); i++)
 	{
 		if (connectedVec[i].finishedSetUp)
@@ -163,6 +164,7 @@ void Server::sendInfo()
 		}
 	}
 }
+//inital 
 bool Server::setUpStep1()
 {
 	//set inital info to send back to confurm connection
@@ -193,7 +195,6 @@ bool Server::setUpStep2()
 	playerInfoVec[info.ID].timeSent = true;
 	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 	{
-
 		cout << "something went wrong" << endl;
 		playerInfoVec[info.ID].timeSent = false;
 		return false;
@@ -240,6 +241,7 @@ bool Server::setUpStep3()
 
 	return true;
 }
+//used to render to server 
 std::vector<playerPos>* Server::getPos()
 {
 	return &playerPosVec;
