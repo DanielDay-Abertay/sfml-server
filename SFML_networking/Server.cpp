@@ -132,8 +132,11 @@ bool Server::receivePacket()
 			}
 			else
 				cout << "got 0" << endl;
+
 			playerPosVec2[newPos.ID] = playerPosVec1[newPos.ID];
 			playerPosVec1[newPos.ID] = playerPosVec[newPos.ID];
+
+			
 			playerPosVec[newPos.ID] = newPos;
 			newPos.ID = NULL;
 			return true;
