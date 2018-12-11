@@ -10,7 +10,7 @@ Server::Server()
 	idCount = 0;
 	seed = time(0);
 	std::cout << "seed = " << seed << endl;
-	
+
 }
 
 Server::~Server()
@@ -21,41 +21,16 @@ Server::~Server()
 void Server::udpBind()
 {
 	unsigned short port = 4444;
-	
+
 
 	if (socket.bind(port) != sf::Socket::Done)
 	{
 		cout << "failed to bind" << endl;
 		return;
-	}		
+	}
 	std::cout << "Server is listening to port " << port << ", waiting for a message... " << std::endl;
-
-	
-
 }
-void Server::confirmTimeStamp()
-{
-	std::size_t received;
-	sf::IpAddress sender;
-	unsigned short senderPort;
-	sf::Uint32 time;
-	if (socket.receive(&time, sizeof(time), received, sender, senderPort) != sf::Socket::Done)
-	{
-		cout << "failed to reciev" << endl;
-	}
-	else
-	{
-		if (time + 200 > getTimeStamp())
-		{
-			cout << "respose to long" << endl;
-		}
-		else
-		{
-			cout << "time fine" << endl;
-		}
-	}
 
-}
 void Server::listener()
 {
 	if (!receivePacket())
@@ -68,11 +43,11 @@ void Server::listener()
 		if (info.connectRequest && !info.connectAccepted)
 		{
 			setUpStep1();
-			
+
 		}
 		if (info.connectAccepted && !info.timeSent)
 		{
-			
+
 			setUpStep2();
 			return;
 		}
@@ -83,20 +58,13 @@ void Server::listener()
 			{
 				return;
 			}
-			
-
 		}
-
-
 	}
-	
 }
 
 sf::Uint32 Server::getTimeStamp()
 {
 	return clock.getElapsedTime().asMilliseconds();
-
-
 }
 
 bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
@@ -107,7 +75,6 @@ bool Server::sendPacket(sf::Packet packet, sf::IpAddress ip)
 		return false;
 	}
 	return true;
-
 }
 
 bool Server::receivePacket()
@@ -132,11 +99,8 @@ bool Server::receivePacket()
 			}
 			else
 				cout << "got 0" << endl;
-
 			playerPosVec2[newPos.ID] = playerPosVec1[newPos.ID];
 			playerPosVec1[newPos.ID] = playerPosVec[newPos.ID];
-
-			
 			playerPosVec[newPos.ID] = newPos;
 			newPos.ID = NULL;
 			return true;
@@ -153,9 +117,8 @@ bool Server::receivePacket()
 				{
 					return true;
 				}
-
 			}
-			
+
 			sf::IpAddress test = ipaddress;
 			setUp tempSetUp;
 			tempSetUp.ip = ipaddress;
@@ -166,10 +129,8 @@ bool Server::receivePacket()
 			return true;
 		}
 	}
-	
 
 	return false;
-
 }
 
 void Server::sendInfo()
@@ -198,12 +159,9 @@ void Server::sendInfo()
 			if (!sendPacket(sentPacket, connectedVec[i].ip))
 			{
 				return;
-
 			}
 		}
-		
 	}
-	
 }
 bool Server::setUpStep1()
 {
@@ -257,8 +215,6 @@ bool Server::setUpStep3()
 	cout << "the latency between cliant and server is " << playerInfoVec[info.ID].latency << endl;
 	playerInfoVec[info.ID].timeOkay = true;
 	playerInfoVec[info.ID].timeStamp = getTime();
-	
-
 
 	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 	{
@@ -288,5 +244,3 @@ std::vector<playerPos>* Server::getPos()
 {
 	return &playerPosVec;
 }
-
-
