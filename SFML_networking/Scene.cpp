@@ -16,7 +16,7 @@ Scene::~Scene()
 
 void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 {
-	
+
 	if (playerPosVec->size() != parVec.size())
 	{
 
@@ -31,14 +31,14 @@ void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 	}
 	for (int i = 0; i < playerPosVec->size(); i++)
 	{
-		
+
 		float x = playerPosVec->at(i).xPos;
 		float y = playerPosVec->at(i).yPos;
 		parVec[i].setLocation(sf::Vector2f(x, y));
 		parVec[i].update(dt);
 		//parVec[i].setPosition(sf::Vector2f(x, y));
 	}
-	
+
 
 	//par.setPosition(pos);
 }
@@ -54,7 +54,7 @@ void Scene::render()
 	{
 		it.render(window);
 	}
-	
+
 	endRender();
 }
 
