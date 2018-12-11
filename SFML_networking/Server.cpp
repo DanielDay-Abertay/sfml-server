@@ -3,12 +3,13 @@
 using namespace std;
 Server::Server()
 {
+	//set up inital server info
 	socket.setBlocking(false);
 	timeStamp = clock.getElapsedTime().asMilliseconds();
 	port = 4444;
 	count = 0;
 	idCount = 0;
-	seed = time(0);
+	seed = time(NULL);
 	std::cout << "seed = " << seed << endl;
 
 }
@@ -28,7 +29,7 @@ void Server::udpBind()
 	}
 	std::cout << "Server is listening to port " << port << ", waiting for a message... " << std::endl;
 }
-//all 
+//all incoming traffic comes through here
 void Server::listener()
 {
 	if (!receivePacket())
@@ -36,8 +37,10 @@ void Server::listener()
 		return;
 	}
 
+	//if the player has not finished setup
 	if (!connectedVec.back().finishedSetUp)
 	{
+		//check which stage it is at and take it to the appropiate function
 		if (info.connectRequest && !info.connectAccepted)
 		{
 			setUpStep1();
@@ -164,7 +167,7 @@ void Server::sendInfo()
 		}
 	}
 }
-//inital 
+//inital connection step
 bool Server::setUpStep1()
 {
 	//set inital info to send back to confurm connection
@@ -188,6 +191,7 @@ bool Server::setUpStep1()
 	}
 	return true;
 }
+//second step in connection
 bool Server::setUpStep2()
 {
 	// setting up more info to establish connection - sending server time to establish latecny
@@ -209,6 +213,7 @@ bool Server::setUpStep2()
 	cout << "time stamp =" << info.timeStamp << endl;
 	return true;
 }
+//final connection step
 bool Server::setUpStep3()
 {
 	cout << "time stamp sent back" << endl;
@@ -229,7 +234,7 @@ bool Server::setUpStep3()
 		cout << "failed to send" << endl;
 		return false;
 	}
-
+	//once connected add give it a position in the vector of player position 
 	cout << "connection established" << endl;
 	playerPos pos;
 	pos.ID = info.ID;

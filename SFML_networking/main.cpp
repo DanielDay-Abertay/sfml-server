@@ -19,15 +19,12 @@ int main()
 	Server server;
 	int timeSent=0;
 	
-
+	//bind the server port
 	server.udpBind();
 	
-
-	
 	Scene scene(&window, &input, &server);
-//	scene.init();
 
-
+	//sfml loop
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -65,15 +62,15 @@ int main()
 		}
 		if (!close) {
 			deltaTime = clock.restart().asSeconds();
-
+			//listen for incoming traffic
 			server.listener();
-
+			//if the time of the last packets was about 50ms ago send another update!
 			if (server.getTime() - 50 > timeSent)
 			{
 				server.sendInfo();
 				timeSent = server.getTime();
 			}
-			
+			//used to render and update on server window
 			scene.update(deltaTime, server.getPos());
 			scene.render();
 			//server.confirmTimeStamp();
