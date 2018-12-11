@@ -13,7 +13,6 @@ Emitter::~Emitter()
 
 void Emitter::init(int amount, sf::Vector2f pos, sf::Texture* texture, int seed)
 {
-
 	particleVec = new std::vector<Particle*>;
 	
 	position = pos;
@@ -23,9 +22,7 @@ void Emitter::init(int amount, sf::Vector2f pos, sf::Texture* texture, int seed)
 		particleVec->push_back(new Particle(seed));
 		particleVec->back()->init(position);
 		particleVec->back()->setTexture(texture);
-		//particleVec->back()->setPosition(sf::Vector2f(100.0f, 100.0f));
 	}
-
 
 }
 
@@ -47,19 +44,13 @@ void Emitter::update(float dt)
 		if (par->offScreen())
 		{
 
-			par->init(position); //need to implement
-			
+			par->init(position);		
 		}
 		else
 		{
-			//par->setDirection(direction);
 			par->update(dt);
-		}
-
-		
-		
+		}	
 	}
-
 }
 
 void Emitter::render(sf::RenderWindow* window)

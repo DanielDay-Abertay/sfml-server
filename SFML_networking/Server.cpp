@@ -7,8 +7,6 @@ Server::Server()
 	socket.setBlocking(false);
 	timeStamp = clock.getElapsedTime().asMilliseconds();
 	port = 4444;
-	count = 0;
-	idCount = 0;
 	seed = time(NULL);
 	std::cout << "seed = " << seed << endl;
 
@@ -224,7 +222,6 @@ bool Server::setUpStep3()
 
 	if (!pack.fillPacket(playerInfoVec[info.ID], sentPacket))
 	{
-
 		cout << "something went wrong" << endl;
 		return false;
 	}
@@ -234,6 +231,7 @@ bool Server::setUpStep3()
 		cout << "failed to send" << endl;
 		return false;
 	}
+
 	//once connected add give it a position in the vector of player position 
 	cout << "connection established" << endl;
 	playerPos pos;
@@ -246,6 +244,7 @@ bool Server::setUpStep3()
 
 	return true;
 }
+
 //used to render to server 
 std::vector<playerPos>* Server::getPos()
 {

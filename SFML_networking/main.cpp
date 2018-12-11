@@ -73,10 +73,6 @@ int main()
 			//used to render and update on server window
 			scene.update(deltaTime, server.getPos());
 			scene.render();
-			//server.confirmTimeStamp();
 		}
-		
-
-
 	}
 }

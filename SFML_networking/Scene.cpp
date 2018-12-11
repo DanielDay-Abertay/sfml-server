@@ -9,17 +9,14 @@ Scene::Scene(sf::RenderWindow* hwnd, Input* in, Server* ser)
 	server = ser;
 }
 
-
 Scene::~Scene()
 {
 }
 
 void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 {
-
 	if (playerPosVec->size() != parVec.size())
 	{
-
 		Emitter em;
 
 		float x = playerPosVec->back().xPos;
@@ -36,11 +33,7 @@ void Scene::update(float dt, std::vector<playerPos> *playerPosVec)
 		float y = playerPosVec->at(i).yPos;
 		parVec[i].setLocation(sf::Vector2f(x, y));
 		parVec[i].update(dt);
-		//parVec[i].setPosition(sf::Vector2f(x, y));
 	}
-
-
-	//par.setPosition(pos);
 }
 
 void Scene::handleInput()
@@ -54,10 +47,8 @@ void Scene::render()
 	{
 		it.render(window);
 	}
-
 	endRender();
 }
-
 
 void Scene::beginRender()
 {

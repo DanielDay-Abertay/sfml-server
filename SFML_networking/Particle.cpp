@@ -59,12 +59,9 @@ void Particle::update(float dt)
 	//use temp variables to calculate new velocity
 	velocityTemp += accelerationTemp * dt;
 	setVelocity(velocityTemp);
-
-
 	
 	move(getVelocity() * dt);
 	acceleration *= 0.f;
-//	std::cout << "X: " << getPosition().x << " Y: " << getPosition().y << std::endl;
 
 }
 
@@ -88,7 +85,4 @@ bool Particle::offScreen()
 
 void Particle::reset()
 {
-
-
-
 }

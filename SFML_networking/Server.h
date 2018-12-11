@@ -46,7 +46,6 @@ public:
 	~Server();
 	void udpBind();
 	void listener();
-	void confirmTimeStamp();
 	sf::Uint32 getTimeStamp();
 	sf::Uint32 getTime() { return clock.getElapsedTime().asMilliseconds(); }
 
@@ -55,14 +54,12 @@ public:
 	bool receivePacket();
 
 	std::vector<playerPos>* getPos();
-	void resetInfo();
 
 	void sendInfo();
 
 	int getSeed() { return seed; }
 
-
-
+	//conbnection functions
 	bool setUpStep1();
 	bool setUpStep2();
 	bool setUpStep3();
@@ -77,28 +74,23 @@ protected:
 	
 	CustomPacket pack;
 	std::vector<playerInfo> playerInfoVec;
+
+	//stores players positoin that come in not used for anything
 	std::vector<playerPos> playerPosVec;
 	std::vector<playerPos> playerPosVec1;
 	std::vector<playerPos> playerPosVec2;
+
+
+	//used as temp storage
 	playerInfo info;
 	playerPos pos;
-
+	otherPlayerInfo other;
+	std::vector<setUp> connectedVec;
 
 	sf::Packet sentPacket;
 	sf::Packet receivedPacket;
 
-	unsigned short port;
-	sf::IpAddress cliant;
-
-	bool once = false;
-
-	int count;
-
-	int idCount;
-
-	otherPlayerInfo other;
-
-	std::vector<setUp> connectedVec;
+	unsigned short port;	
 
 	int seed;
 };
